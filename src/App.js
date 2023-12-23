@@ -1,76 +1,71 @@
+import { useState } from 'react';
 import './App.css';
 import { cardScore, cardBank, cardFace, scores, wins, dealerHand, user1Hand } from './lib/constants';
 import { getRandomInt } from './lib/func';
 //TODO - create git repo
 
 function App() {
+  let cardBankCurrent = structuredClone(cardBank)
+  let dealerHandCurrent = structuredClone(dealerHand)
+  let user1HandCurrent = structuredClone(user1Hand)
+  let currentScore = structuredClone(scores)
 
   // Run on start or reset button click 
-  const runGame = (cardScore, cardBank, scores, dealerHand, user1Hand, getRandomInt) => {
+  const runGame = (cardScore, getRandomInt) => {
+    // reset game if cards are dealt already
+    if (dealerHandCurrent.length > 0) {
+      cardBankCurrent = structuredClone(cardBank)
+      dealerHandCurrent = structuredClone(dealerHand)
+      user1HandCurrent = structuredClone(user1Hand)
+      currentScore = structuredClone(scores)
+    }
+    
     // starts dealer and player w/ 2 cards
       // dealer's is face down - will add when graphics are added (card dict should have a value of [quantity, card_face])
       // second card is drawn face up for player and dealer
     console.log('HELLO I WORK')
-    console.log('card bank', cardBank)
-    console.log('dealer hand', dealerHand)
-    console.log('user hand', user1Hand)
+    console.log('current card bank', cardBankCurrent)
+    console.log('card bank', cardBankCurrent)
+    console.log('dealer hand', dealerHandCurrent)
+    console.log('user hand', user1HandCurrent)
 
-    // the deck of cards - mutated as cards are drawn
-    var cardBankClone = structuredClone(cardBank);
-
-    // player hands
-    var dealerHandClone = structuredClone(dealerHand);
-    var user1HandClone = structuredClone(user1Hand);
-
-    // player scores for current game
-    var scoresClone = structuredClone(scores)
-
-    var initialHandObj = initializeHands(cardBankClone, dealerHandClone, user1HandClone, scoresClone, cardScore)
-    // update w/ initial hand results
-    cardBankClone = initialHandObj.cardBank;
-    dealerHandClone = initialHandObj.dealerHand;
-    user1HandClone = initialHandObj.user1Hand;
-    scoresClone = initialHandObj.scores;
-    
-    
+    initializeHands(cardScore, getRandomInt)
   }
 
   // Run to build initial hand
-  const initializeHands = (cardBank, dealerHand, user1Hand, scores, cardScore) => {
+  const initializeHands = (cardScore, getRandomInt) => {
 
-    while (dealerHand.length < 2) {
+    while (dealerHandCurrent.length < 2) {
       console.log("I'm in the loop")
-      let i = getRandomInt(cardBank.length);
+      let i = getRandomInt(cardBankCurrent.length);
 
       // add card to dealer's hand
-      user1Hand.push(cardBank[i])
-      console.log(cardBank[i][0], "score:", cardScore[cardBank[i][0]])
+      user1HandCurrent.push(cardBankCurrent[i])
+      console.log('userHandCurrent =====>', user1HandCurrent)
       
       // update dealer's score with card point value
-      scores["user1"] = scores["user1"] + cardScore[cardBank[i][0]] 
-      console.log('user1 score', scores["user1"])
+      currentScore["user1"] = currentScore["user1"] + cardScore[cardBankCurrent[i].substring(0, 2)]
+      console.log('user1 score', currentScore["user1"])
       
-      cardBank.splice(i, 1)
+      cardBankCurrent.splice(i, 1)
 
       console.log('i',i)
 
-      i = getRandomInt(cardBank.length)
+      i = getRandomInt(cardBankCurrent.length)
       // add card to dealer's hand
-      dealerHand.push(cardBank[i])
+      dealerHandCurrent.push(cardBankCurrent[i])
       
       // update dealer's score with card point value
-      scores["dealer"] = scores["dealer"] + cardScore[cardBank[i][0]] 
-      console.log('dealer score', scores["dealer"])
+      currentScore["dealer"] = currentScore["dealer"] + cardScore[cardBankCurrent[i].substring(0, 2)]
+      console.log('dealer score', currentScore["dealer"])
       
-      cardBank.splice(i, 1)
+      cardBankCurrent.splice(i, 1)
       
       console.log('i',i)
-      console.log('cardBank length', cardBank.length)
-      console.log('cardBank after splice', cardBank)
-      console.log('userHand:', user1Hand, 'dealerHand', dealerHand)
-
-      return { "cardBank": cardBank, "dealerHand": dealerHand, "user1Hand": user1Hand, "scores": scores }
-
+      console.log('cardBank length', cardBankCurrent.length)
+      console.log('cardBank after splice', cardBankCurrent)
+      console.log('current cardBank after splice', cardBankCurrent)
+      console.log('userHand:', user1HandCurrent, 'dealerHand', dealerHandCurrent)
     }
     
   }
@@ -100,7 +95,7 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={()=>runGame(cardScore, cardBank, scores, dealerHand, user1Hand, getRandomInt)}>START GAME</button>
+      <button onClick={()=>runGame(cardScore, getRandomInt)}>START GAME</button>
       <button onClick={()=>drawCard()}>HIT</button>
     </div>
   );
