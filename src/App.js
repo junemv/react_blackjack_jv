@@ -23,45 +23,23 @@ function App() {
     // starts dealer and player w/ 2 cards
       // dealer's is face down - will add when graphics are added (card dict should have a value of [quantity, card_face])
       // second card is drawn face up for player and dealer
-    console.log('HELLO I WORK')
     console.log('current card bank', cardBankCurrent)
     console.log('card bank', cardBankCurrent)
     console.log('dealer hand', dealerHandCurrent)
     console.log('user hand', user1HandCurrent)
 
-    initializeHands(cardScore, getRandomInt)
+    initializeHands(getRandomInt)
   }
 
-  // Run to build initial hand
-  const initializeHands = (cardScore, getRandomInt) => {
+  // Run to build initial hand and update score
+  const initializeHands = (getRandomInt) => {
+    // we could have initialize hand run draw card
 
     while (dealerHandCurrent.length < 2) {
-      console.log("I'm in the loop")
-      let i = getRandomInt(cardBankCurrent.length);
+      drawCard("user1", user1HandCurrent)
 
-      // add card to dealer's hand
-      user1HandCurrent.push(cardBankCurrent[i])
-      console.log('userHandCurrent =====>', user1HandCurrent)
+      drawCard("dealer", dealerHandCurrent)
       
-      // update dealer's score with card point value
-      currentScore["user1"] = currentScore["user1"] + cardScore[cardBankCurrent[i].substring(0, 2)]
-      console.log('user1 score', currentScore["user1"])
-      
-      cardBankCurrent.splice(i, 1)
-
-      console.log('i',i)
-
-      i = getRandomInt(cardBankCurrent.length)
-      // add card to dealer's hand
-      dealerHandCurrent.push(cardBankCurrent[i])
-      
-      // update dealer's score with card point value
-      currentScore["dealer"] = currentScore["dealer"] + cardScore[cardBankCurrent[i].substring(0, 2)]
-      console.log('dealer score', currentScore["dealer"])
-      
-      cardBankCurrent.splice(i, 1)
-      
-      console.log('i',i)
       console.log('cardBank length', cardBankCurrent.length)
       console.log('cardBank after splice', cardBankCurrent)
       console.log('current cardBank after splice', cardBankCurrent)
@@ -70,17 +48,22 @@ function App() {
     
   }
 
-  const updateScore = (val, player, scores) => {
-    var scoresClone = structuredClone(scores)
-
-    scoresClone.player += val;
-    console.log(scoresClone)
-    return scoresClone
+  // function for hit button
+  const hit = () => {
+    // should contain logic for dealer to draw extra card if point total is < 16
   }
-  
-  // on hit button click
-  const drawCard = () => {
-    // draw 1 card to the user's hand from the bank
+
+  // draw card into player hand, add card score to player's total score
+  const drawCard = (player, playerHand) => {
+    // draw 1 card to the player's hand from the bank
+    let i = getRandomInt(cardBankCurrent.length);
+
+    playerHand.push(cardBankCurrent[i])
+    console.log(player, 'hand =====>', playerHand)
+
+    updateScore(player, i)
+
+    cardBankCurrent.splice(i, 1)
 
     // needs condition for dealer to draw a card if hand point value is < 16
     // needs a condition for bust?
@@ -88,15 +71,21 @@ function App() {
 
   // on stay button click
   const stay = () => {
-    // ends game, dealer's second card is revealed and point totals are calculated
+    // ends game, dealer's hidden card is revealed and point totals are calculated
       // if multiplayer is implemented then stay will only end the game for each player that stays
     // tally a count of dealer and player wins
   }
 
+  const updateScore = (player, i) => {
+    currentScore[player] = currentScore[player] + cardScore[cardBankCurrent[i].substring(0, 2)]
+    console.log(player, 'score', currentScore[player])
+  }
+
   return (
     <div className="App">
-      <button onClick={()=>runGame(cardScore, getRandomInt)}>START GAME</button>
-      <button onClick={()=>drawCard()}>HIT</button>
+      <button onClick={()=>runGame(cardScore, getRandomInt)}>NEW GAME</button>
+      <button onClick={()=>hit()}>HIT</button>
+      <button onClick={()=>stay()}>STAY</button>
     </div>
   );
 }
