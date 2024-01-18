@@ -91,4 +91,10 @@ const wins = {
 const dealerHand = []
 const user1Hand = []
 
-export { cardScore, cardBank, cardFace, scores, wins, dealerHand, user1Hand }
+// used to determine if a player has an ace in their hand for point totals
+const aceFlag = {
+	dealer: false,
+	user1: false
+}
+
+export { cardScore, cardBank, cardFace, scores, wins, dealerHand, user1Hand, aceFlag }
