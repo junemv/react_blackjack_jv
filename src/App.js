@@ -10,12 +10,10 @@ function App() {
   const [cardBankCurrent, setCardBankCurrent] = useState(cardBank)
   const [user1HandCurrent, setUser1HandCurrent] = useState(user1Hand)
   const [dealerHandCurrent, setDealerHandCurrent] = useState(dealerHand)
-  // let cardBankCurrent = structuredClone(cardBank)
-  // let dealerHandCurrent = structuredClone(dealerHand)
-  // let user1HandCurrent = structuredClone(user1Hand)
-  let currentScore = structuredClone(scores)
-  let currentWins = structuredClone(wins)
-  let aceFlagCurrent = structuredClone(aceFlag)
+  const [currentScore, setCurrentScore] = useState(scores)
+  const [currentWins, setCurrentWins] = useState(wins)
+
+  // let aceFlagCurrent = structuredClone(aceFlag)
 
 
   // Run to build initial hand and update score
@@ -24,24 +22,39 @@ function App() {
     if (dealerHandCurrent.length > 0) {
       resetVars()
     }
+    // TODO (2/12) - create a drawCardTest func to test draw card with its current return value
+    // this func is getting too messy to test - I suspect that I'm not updating my variables properly
+    let cardBankTemp = cardBankCurrent
+    let initialUser1Hand = []
+    let initialDealerHand = []
 
     setGameStart(true)
-    drawCard("user1", user1HandCurrent, setUser1HandCurrent)
+    // drawCard("user1", user1HandCurrent, setUser1HandCurrent)
 
     let count = 0
     // TODO - ENDLESS LOOP???????
     while (count < 2) {
-      drawCard("user1", user1HandCurrent, setUser1HandCurrent)
+      [initialUser1Hand, cardBankTemp] = drawCard("user1", initialUser1Hand, cardBankTemp)
 
-      drawCard("dealer", dealerHandCurrent, setDealerHandCurrent)
+      [initialDealerHand, cardBankTemp] = drawCard("dealer", initialDealerHand, cardBankTemp)
       
       count = count + 1;
       
-      console.log('cardBank length', cardBankCurrent.length)
-      console.log('cardBank after splice', cardBankCurrent)
-      console.log('current cardBank after splice', cardBankCurrent)
-      console.log('userHand:', user1HandCurrent, 'dealerHand', dealerHandCurrent)
+      console.log("user1Hand in loop", initialUser1Hand)
+      // console.log('cardBank length', cardBankCurrent.length)
+      // console.log('cardBank after splice', cardBankCurrent)
+      // console.log('current cardBank after splice', cardBankCurrent)
+      // console.log('userHand:', user1HandCurrent, 'dealerHand', dealerHandCurrent)
     }
+    setCardBankCurrent(cardBankTemp)
+    setUser1HandCurrent(initialUser1Hand)
+    setDealerHandCurrent(initialDealerHand)
+
+    console.log('cardBank length', cardBankTemp.length)
+    console.log('cardBank after splice', cardBankTemp)
+    // console.log('current cardBank after splice', cardBankTemp)
+    console.log('userHand:', initialUser1Hand, 'dealerHand', initialDealerHand)
+
   }
 
   // on hit button click - draws a card into player's hand, contains logic for dealer drawing extra card
@@ -82,12 +95,12 @@ function App() {
   }
 
   // helper - draw card into player hand, add card score to player's total score
-  const drawCard = (player, playerHand, setPlayerHand) => {
+  const drawCard = (player, playerHand, cardBank) => {
     // TODO - move newPlaerHand to the parent function for drawCard
       // then pass that array back to drawCard. setPlayerHand in parent func
 
     // draw 1 card to the player's hand from the bank
-    let i = getRandomInt(cardBankCurrent.length);
+    let i = getRandomInt(cardBank.length);
 
     let newPlayerHand = []
     if (playerHand) {
@@ -95,27 +108,29 @@ function App() {
         newPlayerHand.push(card);
       }
     }
-    newPlayerHand.push(cardBankCurrent[i])
+    newPlayerHand.push(cardBank[i])
 
     // updateScore(player, i)
-    updateCardBank(cardBankCurrent[i])
+    cardBank = updateCardBank(cardBank[i], cardBank)
 
-    setPlayerHand(newPlayerHand)
+    // setPlayerHand(newPlayerHand)
 
     console.log(player, 'hand =====>', newPlayerHand)
+    return [newPlayerHand, cardBank]
 
     // cardBankCurrent.splice(i, 1)
   }
 
   // remove drawn card
-  const updateCardBank = (drawnCard) => {
+  const updateCardBank = (drawnCard, cardBank) => {
     let newCardBank = []
-    for (let card of cardBankCurrent) {
+    for (let card of cardBank) {
       if (card !== drawnCard) {
         newCardBank.push(card)
       }
     }
-    setCardBankCurrent(newCardBank)
+    return newCardBank
+    // setCardBankCurrent(newCardBank)
   }
 
   // helper - used to update player's score with the value of a card at the assigned index inside of the card bank
